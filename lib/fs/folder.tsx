@@ -50,7 +50,7 @@ export class Folder extends ReactOpsComponent<{
         const props = this.props;
         const fullPath = path.join(props._base, props.path);
 
-        props.reporter("Ensure folder " + props.path);
+        props.reporter("Ensure folder " + fullPath);
 
         try {
             const isDirectory = await this.isDirectory(fullPath);
@@ -62,7 +62,7 @@ export class Folder extends ReactOpsComponent<{
             }
 
             return null;
-            
+
         } catch (exception) {
             props.reporter("Error ensuring folder " + props.path);
             console.error(exception);

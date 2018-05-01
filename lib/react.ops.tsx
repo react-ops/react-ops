@@ -46,6 +46,7 @@ export const ReactOps = {
     render: async <T extends IReactOpsElement>(
         element: T | PromiseLike<T>,
         executionPath: string | null,
+        parentProps?: IReactOpsProps,
         callback?: () => void
     ): Promise<void> => {
         let cast: T;
@@ -63,21 +64,28 @@ export const ReactOps = {
 
         const ElementType = (cast.type as TReactOpsElement);
         const reporter = debug("react-ops:" + (cast.type as any).name);
-        const props: IReactOpsProps = { ...cast.props, reporter, _base: executionPath, _fs: fs };
+        let props: IReactOpsProps = { _base: executionPath, _fs: fs, ...parentProps };
+        delete props.children;
+        props = { ...props, ...cast.props, reporter }
         let content;
         if (shouldConstruct(ElementType)) {
             const instance = new (ElementType as TReactOpsComponentConstructor)(props);
             content = instance.render();
+            if (instance.getChildContext) {
+                props = instance.getChildContext();
+            }
         } else {
             content = (ElementType as TReactOpsPureFunction)(props);;
         }
 
-        if (content.then) {
+        if (content && content.then) {
             content = await content;
         }
 
+
+
         if (content && content.type) {
-            return ReactOps.render(content, executionPath, callback);
+            return ReactOps.render(content, executionPath, props, callback);
         }
         if (callback) {
             callback();

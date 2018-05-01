@@ -4,7 +4,10 @@ import {
     IReactOpsProps,
     ReactOpsComponent,
     Folder,
-    NPMGlobal
+    NPMGlobal,
+    RimRaf,
+    Exec,
+    Cd
 } from "../lib";
 import * as path from "path";
 
@@ -57,26 +60,16 @@ const GitRepo = (props) => {
     return props.children;
 }
 
-
-
-
-const RimRaf = (props) => {
-    console.log("RimRaf", props);
-    return props.children;
-}
-
 ReactOps.render(
-    <NPMGlobal dependency="vue">
-        <Folder path="public" />
+    <NPMGlobal dependency="gatsby-cli">
+        <RimRaf path="gatsby-site">
+            <Exec cmd="gatsby new gatsby-site">
+                <Cd path="gatsby-site">
+                    <Exec cmd="gatsby build">
+                        <Cd path="public"/>
+                    </Exec>
+                </Cd>
+            </Exec>
+        </RimRaf>
     </NPMGlobal>
     , path.join(__dirname, "..", ".."));
-{/*<S3SLLStaticWebsite host="sielay.com">
-        {/*<Folder path="public">
-            
-            <RimRaf path="gatsby-site">
-                <ShellJob cmd="gatsby new gatsby-site" />
-                
-            </RimRaf>
-</Folder>
-</S3SLLStaticWebsite>}
-*/}
