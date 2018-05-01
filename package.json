@@ -1,0 +1,26 @@
+{
+  "name": "@react-ops/react-ops",
+  "version": "0.0.1",
+  "description": "Use JSX to build your architecture, deployment and testing. You can even make it Reactive!",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/react-ops/react-ops.git"
+  },
+  "keywords": [
+    "react",
+    "devops",
+    "deployment",
+    "jsx",
+    "tsx"
+  ],
+  "author": "lukaszsielski@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/react-ops/react-ops/issues"
+  },
+  "homepage": "https://github.com/react-ops/react-ops#readme"
+}
