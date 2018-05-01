@@ -22,5 +22,17 @@
   "bugs": {
     "url": "https://github.com/react-ops/react-ops/issues"
   },
-  "homepage": "https://github.com/react-ops/react-ops#readme"
+  "homepage": "https://github.com/react-ops/react-ops#readme",
+  "dependencies": {
+    "@types/node": "^10.0.2",
+    "@types/react": "^16.3.13",
+    "debug": "^3.1.0",
+    "npm": "^6.0.0",
+    "react": "^16.3.2",
+    "rxjs": "^6.0.0",
+    "typescript": "^2.8.3"
+  },
+  "devDependencies": {
+    "jest": "^22.4.3"
+  }
 }
