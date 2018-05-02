@@ -4,6 +4,13 @@
 
 This repository is Very In Progress and not ready for production!
 
+## Idea
+
+ * Write your deployment using JSX
+ * Using pure functions limits side effects
+ * You can have process listening to external events (i.e. traffic, git merge), which triggers infrastructure update by
+   updating props in the tree
+
 ## Working example 
 
 ```jsx
@@ -89,7 +96,6 @@ ReactOps.render(
     , path.join(__dirname, "..", ".."));
 ```
 
-```
 
 ## Licence
 
