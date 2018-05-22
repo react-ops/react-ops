@@ -1,5 +1,7 @@
 # react-ops
 
+Current implementation is *wrong*, see here https://github.com/react-ops/react-ops/issues/1
+
 > Use JSX to build your architecture, deployment and testing. You can even make it Reactive!
 
 This repository is Very In Progress and not ready for production!
