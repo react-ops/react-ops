@@ -1,18 +1,23 @@
 import * as React from "react";
 import {
-    ReactOpsComponent
+    ReactOpsComponent,
 } from "./Component";
+import {
+    IReactOpsNode
+} from "../index.d"
 
 export interface IFileProps {
-    name: string;
-    content?: Buffer | string;
+    name: string
 }
 
 export class File extends ReactOpsComponent<IFileProps, IFileProps> {
-    public render() {
+    public render(): IReactOpsNode {
         return {
-            name: this.state.name,
-            content: this.state.content
+            type: "file",
+            key: this.props.name,
+            props: {
+                ...this.props
+            }
         };
     }
 }

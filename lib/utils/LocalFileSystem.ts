@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import * as mkdirp from "mkdirp";
 import * as Path from "path";
+import * as rimraf from "rimraf";
 import {
     IFileSystem,
     IFileSystemNode,
@@ -29,11 +30,8 @@ class LocalFolder implements IFolder {
     public get parent(): LocalFolder {
         return new LocalFolder(Path.dirname(this.path), this.fs)
     }
-    public get children() {
-        return Promise.resolve(null);
-    }
-
-    constructor(public path: string, private fs: LocalFileSystem ) { }
+    
+    constructor(public path: string, private fs: LocalFileSystem) { }
 }
 
 export class LocalFileSystem implements IFileSystem {
@@ -66,7 +64,7 @@ export class LocalFileSystem implements IFileSystem {
             await this.stats(Path.join(this.chroot, path));
             return true;
         } catch (exception) {
-            if ((exception as NodeJS.ErrnoException).code === "ENOENT") {
+            if (["ENOENT", "ENOTDIR"].indexOf((exception as NodeJS.ErrnoException).code) !== -1) {
                 return false;
             }
             throw exception;
@@ -95,6 +93,10 @@ export class LocalFileSystem implements IFileSystem {
         return new Promise<string>((resolve, reject) => {
             fs.readFile(Path.join(this.chroot, path), "utf8", (error: NodeJS.ErrnoException, content: string) => {
                 if (error) {
+                    if (["EISDIR", "ENOENT", "ENOTDIR"].indexOf(error.code) !== -1) {
+                        resolve(undefined);
+                        return;
+                    }
                     reject(error);
                     return;
                 }
@@ -112,19 +114,25 @@ export class LocalFileSystem implements IFileSystem {
                 }
                 resolve(new LocalFile(path, this));
             });
-        });        
+        });
     }
 
     public async delete(path: string): Promise<boolean> {
-        const node = await this.get(path);
-        if (node && node.parent) {
-            delete node.parent.children[node.path];
-            return true;
+        if (!await this.exists(path)) {
+            return false;
         }
-        return false;
+        return new Promise<boolean>((resolve, reject) => {
+            rimraf(Path.join(this.chroot, path), error => {
+                if (error) {
+                    reject(error);
+                    return;
+                }
+                resolve(true);
+            })
+        });
     }
 
-    private async get(path: string, relativeTo?: LocalFolder): Promise<IFileSystemNode> {
+    public async get(path: string, relativeTo?: LocalFolder): Promise<IFileSystemNode> {
         try {
             const stat = await this.stats(Path.join(this.chroot, path));
             if (stat.isDirectory()) {
@@ -132,11 +140,24 @@ export class LocalFileSystem implements IFileSystem {
             }
             return new LocalFile(path, this);
         } catch (exception) {
-            if ((exception as NodeJS.ErrnoException).code === "ENOENT") {
+            if (["ENOENT", "ENOTDIR"].indexOf((exception as NodeJS.ErrnoException).code) !== -1) {
                 return null;
             }
             throw exception;
         }
+    }
+
+    public async ls(path: string): Promise<string[]> {
+        return new Promise<string[]>((resolve, reject) =>
+            fs.readdir(Path.join(this.chroot, path), (err: NodeJS.ErrnoException, files: string[]) =>
+                err
+                    ? (
+                        ["ENOENT", "ENOTDIR"].indexOf(err.code) !== -1
+                            ? resolve([])
+                            : reject(err)
+                    )
+                    : resolve(files)
+            ));
     }
 
     private async stats(path: string): Promise<fs.Stats> {

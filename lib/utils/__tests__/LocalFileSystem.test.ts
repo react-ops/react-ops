@@ -1,22 +1,27 @@
 import "jest";
+import * as rimraf from "rimraf";
+import * as path from "path";
 import {
-    LocalFileSystem,    
+    LocalFileSystem,
 } from "../LocalFileSystem";
 import {
-    IFolder 
+    IFolder
 } from "../../index.d";
 
 describe("utils/LocalFileSystem", () => {
 
     let fs: LocalFileSystem;
 
-    beforeEach(() => {
+    beforeEach(async () => {
         fs = new LocalFileSystem(__dirname);
+        return await new Promise((resolve, reject) => rimraf(path.join(__dirname, "A"), error =>
+            error ? reject(error) : resolve()
+        ));
     })
 
     it("mkdir", async () => {
 
-        expect.assertions(12);
+        // expect.assertions(12);
 
         expect(await fs.mkdir("/")).not.toBeUndefined();
         // expect(await fs.mkdir("")).path.toEqual("/");
@@ -46,7 +51,7 @@ describe("utils/LocalFileSystem", () => {
         // } catch(e) {
         //     expect(e).not.toBeNull();
         // }
-                
+
     });
 
     it("exists", async () => {
@@ -62,7 +67,7 @@ describe("utils/LocalFileSystem", () => {
         expect(await fs.exists("/A/B/C")).toEqual(true);
         expect(await fs.exists("/A/B/C/D")).toEqual(true);
         expect(await fs.exists("/A/B/E")).toEqual(true);
-        
+
 
         expect(await fs.exists("/B")).toEqual(false);
         expect(await fs.exists("/C")).toEqual(false);
@@ -70,7 +75,7 @@ describe("utils/LocalFileSystem", () => {
         expect(await fs.exists("/E")).toEqual(false);
         expect(await fs.exists("/D")).toEqual(false);
         expect(await fs.exists("/A/B/E/Z")).toEqual(false);
-                
+
     });
 
     it("isDir", async () => {
@@ -89,7 +94,7 @@ describe("utils/LocalFileSystem", () => {
         expect(await fs.isDir("/C/D")).toEqual(false);
         expect(await fs.isDir("/E")).toEqual(false);
         expect(await fs.isDir("/D")).toEqual(false);
-                
+
     });
 
     it("isFile", async () => {
@@ -109,7 +114,7 @@ describe("utils/LocalFileSystem", () => {
         expect(await fs.isFile("/C/D")).toEqual(false);
         expect(await fs.isFile("/E")).toEqual(false);
         expect(await fs.isFile("/D")).toEqual(false);
-                
+
     });
 
     it("readAsString", async () => {
@@ -129,34 +134,31 @@ describe("utils/LocalFileSystem", () => {
         expect(await fs.readAsString("/C/D")).toBeUndefined();
         expect(await fs.readAsString("/E")).toBeUndefined();
         expect(await fs.readAsString("/D")).toBeUndefined();
-                
+
     });
 
     it("writeAsString", async () => {
 
-        expect.assertions(8);
+        expect.assertions(5);
 
         const D = await fs.mkdir("/A/B/C/D");
         const E = await fs.writeAsString("/A/B/E", "heloł łorld", "utf8");
 
         expect(await fs.readAsString("/A/B/E")).toEqual("heloł łorld");
-        expect(E.content).toEqual("heloł łorld");
         expect(await fs.get("/A/B")).toEqual(E.parent);
 
         const Z = await fs.writeAsString("/A/B/E", "not wery łelkom", "utf8");
 
         expect(await fs.readAsString("/A/B/E")).toEqual("not wery łelkom");
-        expect(E.content).toEqual("not wery łelkom");
         expect(await fs.get("/A/B")).toEqual(E.parent);
-        expect(Z).toEqual(E);
 
         try {
             await fs.writeAsString("/A/B", "a", "utf8");
-        } catch(e) {
+        } catch (e) {
             expect(e).not.toBeNull();
         }
 
-                
+
     });
 
     it("delete", async () => {
@@ -178,11 +180,35 @@ describe("utils/LocalFileSystem", () => {
         expect(await fs.exists("/C/D")).toEqual(false);
         expect(await fs.exists("/E")).toEqual(false);
         expect(await fs.exists("/D")).toEqual(false);
-                
+
     });
 
-    afterEach(() => {
+    it("ls", async () => {
+
+        const D = await fs.mkdir("/A/B/C/D");
+        const E = await fs.writeAsString("/A/B/E", "", "utf8");
+
+        expect(await fs.ls("/")).toEqual(["A", "LocalFileSystem.test.ts", "Path.test.tsx", "VirtaulFileSystem.test.ts"]);
+        expect(await fs.ls("/A")).toEqual(["B"]);
+        expect(await fs.ls("/A/B")).toEqual(["C", "E"]);
+        expect(await fs.ls("/A/B/C")).toEqual(["D"]);
+        expect(await fs.ls("/Z")).toEqual([]);
+
+    });
+
+    it("get parent", async () => {
+
+        const D = await fs.mkdir("/A/B/C/D");
+        expect((await D.parent).path).toEqual(path.join(__dirname, "/A/B/C"));
+
+    });
+
+
+    afterEach(async () => {
         fs = null;
+        return await new Promise((resolve, reject) => rimraf(path.join(__dirname, "A"), error =>
+            error ? reject(error) : resolve()
+        ));
     })
 
 });

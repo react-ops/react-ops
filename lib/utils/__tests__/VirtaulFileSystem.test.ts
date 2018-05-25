@@ -181,6 +181,26 @@ describe("utils/VirtualFilesystem", () => {
                 
     });
 
+    it("ls", async () => {
+
+        const D = await fs.mkdir("/A/B/C/D");
+        const E = await fs.writeAsString("/A/B/E", "", "utf8");
+
+        expect(await fs.ls("/")).toEqual(["A"]);
+        expect(await fs.ls("/A")).toEqual(["B"]);
+        expect(await fs.ls("/A/B")).toEqual(["C", "E"]);
+        expect(await fs.ls("/A/B/C")).toEqual(["D"]);
+        expect(await fs.ls("/Z")).toEqual([]);
+
+    });
+
+    it("get parent", async () => {
+
+        const D = await fs.mkdir("/A/B/C/D");
+        expect((await D.parent).path).toEqual("C");
+
+    });
+
     afterEach(() => {
         fs = null;
     })

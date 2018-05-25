@@ -57,3 +57,6 @@ typings/
 # dotenv environment variables file
 .env
 
+# tests
+/lib/utils/__tests__/A
+

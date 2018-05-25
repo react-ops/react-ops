@@ -24,8 +24,8 @@ class VirtualFile implements IFile, IVirtualNode {
 
 class VirtualFolder implements IFolder, IVirtualNode {
 
-    public children: TVirtualFileSystemNodeHash;
     public parent: VirtualFolder;
+    public children: TVirtualFileSystemNodeHash;
 
     constructor(public path: string, children?: TVirtualFileSystemNodeHash) {
         this.children = children || {};
@@ -142,5 +142,13 @@ export class VirtualFileSystem implements IFileSystem {
             }
             return null;
         }
+    }
+
+    public async ls(path: string): Promise<string[]> {
+        const folder = await this.get(path);
+        if (folder && folder instanceof VirtualFolder) {
+            return Object.keys(folder.children);
+        }
+        return [];
     }
 }

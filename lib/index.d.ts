@@ -15,12 +15,11 @@ export interface IFile extends IFileSystemNode {
 
 export type TFileSystemNodeHash = { [name: string]: IFileSystemNode };
 
+export type TOpsType = "file" | "folder" | "symlink" | "command";
+
 export interface IFolder extends IFileSystemNode {
-    children: TFileSystemNodeHash | PromiseLike<TFileSystemNodeHash>
+    // children: TFileSystemNodeHash | PromiseLike<TFileSystemNodeHash>
 }
-
-
-
 
 export interface IFileSystem {
     mkdir(path: string): Promise<IFolder>
@@ -30,16 +29,18 @@ export interface IFileSystem {
     readAsString(path: string): Promise<string>
     writeAsString(path: string, content: string, charset: string): Promise<IFile>
     delete(path: string): Promise<boolean>
+    ls(path: string): Promise<string[]>;
 }
 
 export interface IReactOpsProps {
+    name?: string;
     $fs?: IFileSystem;
     $chroot?: string;
+    $dry?: boolean;
 }
-export interface IReactOpsElement extends React.ReactElement<IReactOpsProps> { }
-export interface IReactOpsNode extends React.ReactElement<IReactOpsElement> {
-    diff(): any;
-    apply(): any;
+export interface IReactOpsElement extends React.ReactElement<TReactOpsProps> { }
+export interface IReactOpsNode extends React.ReactElement<any> {
+
 }
 
 export type TReactOpsProps = Readonly<IReactOpsProps> & Readonly<{ children?: React.ReactNode }>;
