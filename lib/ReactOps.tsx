@@ -30,11 +30,8 @@ export class ReactOps {
         inputProps?: TReactOpsProps,
         visual: boolean = false
     ): Promise<any> {
-        console.log("A")
         const { virtualDom, fs } = await ReactOps.virtualDomAndFS(element, executionPath, inputProps);
-        console.log("B")
         const state = await ReactOps.collect(executionPath, fs);
-        console.log("C")
         const differ = new DiffPatcher();
         const cleanDOM = ReactOps.cleanup(virtualDom);
         const diff = differ.diff(cleanDOM, state);
@@ -85,14 +82,20 @@ export class ReactOps {
 
         if (isDir) {
 
-            const items = await fs.ls(path);
+            const items = (await fs.ls(path)).filter(s => s !== "." && s !== "..")
+
+            const children = await Promise
+                .all(items
+                    .map(child => ReactOps
+                        .collect(Path.join(path, child), fs)))
+
 
             return {
                 type: "folder",
                 key: name,
                 props: {
                     name,
-                    children: await Promise.all(items.map(child => ReactOps.collect(Path.join(path, child), fs)))
+                    children
                 }
             }
         }
@@ -240,18 +243,15 @@ export class ReactOps {
 
         switch (element.type) {
             case "file": {
-                console.log(Path.join(element.props.$chroot));
-                console.log(ReactOps.toString(element));
-                // await element.props.$fs
-                //     .writeAsString(
-                //         Path.join(element.props.$chroot, element.props.name),
-                //         ReactOps.toString(element),
-                //         "utf8");
+                await element.props.$fs
+                    .writeAsString(
+                        Path.join(element.props.$chroot, element.props.name),
+                        ReactOps.toString(element),
+                        "utf8");
                 break;
             }
             case "folder": {
-                console.log(Path.join(element.props.$chroot));
-                // await element.props.$fs.mkdir(Path.join(element.props.$chroot));
+                await element.props.$fs.mkdir(Path.join(element.props.$chroot));
                 await Promise
                     .all((element.props.children as React.ReactNode[])
                         .map(child => ReactOps.applyFileSystem(child)));

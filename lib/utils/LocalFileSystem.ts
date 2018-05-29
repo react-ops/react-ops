@@ -30,7 +30,7 @@ class LocalFolder implements IFolder {
     public get parent(): LocalFolder {
         return new LocalFolder(Path.dirname(this.path), this.fs)
     }
-    
+
     constructor(public path: string, private fs: LocalFileSystem) { }
 }
 
@@ -106,6 +106,8 @@ export class LocalFileSystem implements IFileSystem {
     }
 
     public async writeAsString(path: string, content: string, charset: string): Promise<LocalFile> {
+        const directory = Path.dirname(path);
+        await this.mkdir(directory);
         return new Promise<LocalFile>((resolve, reject) => {
             fs.writeFile(Path.join(this.chroot, path), content, charset, (error: NodeJS.ErrnoException) => {
                 if (error) {

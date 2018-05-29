@@ -111,8 +111,15 @@ export class VirtualFileSystem implements IFileSystem {
 
         } else {
             current = new VirtualFile(basename, content);
-            parent.children[basename] = current;
             current.parent = parent;
+            if (parent && parent.children && basename && parent as any !== current as any) {
+                try {
+                    parent.children[basename] = current;
+                } catch(e) {
+                    console.error(e);
+                }
+            }
+            
         }
         return current as VirtualFile;
     }
@@ -146,7 +153,7 @@ export class VirtualFileSystem implements IFileSystem {
 
     public async ls(path: string): Promise<string[]> {
         const folder = await this.get(path);
-        if (folder && folder instanceof VirtualFolder) {
+        if (folder && folder instanceof VirtualFolder && folder.children) {
             return Object.keys(folder.children);
         }
         return [];

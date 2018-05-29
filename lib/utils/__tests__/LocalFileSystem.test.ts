@@ -13,8 +13,8 @@ describe("utils/LocalFileSystem", () => {
     let fs: LocalFileSystem;
 
     beforeEach(async () => {
-        fs = new LocalFileSystem(__dirname);
-        return await new Promise((resolve, reject) => rimraf(path.join(__dirname, "A"), error =>
+        fs = new LocalFileSystem(path.join(__dirname, ".test"));
+        return await new Promise((resolve, reject) => rimraf(path.join(__dirname, ".test"), error =>
             error ? reject(error) : resolve()
         ));
     })
@@ -188,7 +188,7 @@ describe("utils/LocalFileSystem", () => {
         const D = await fs.mkdir("/A/B/C/D");
         const E = await fs.writeAsString("/A/B/E", "", "utf8");
 
-        expect(await fs.ls("/")).toEqual(["A", "LocalFileSystem.test.ts", "Path.test.tsx", "VirtaulFileSystem.test.ts"]);
+        expect(await fs.ls("/")).toEqual(["A"]);
         expect(await fs.ls("/A")).toEqual(["B"]);
         expect(await fs.ls("/A/B")).toEqual(["C", "E"]);
         expect(await fs.ls("/A/B/C")).toEqual(["D"]);
@@ -199,14 +199,14 @@ describe("utils/LocalFileSystem", () => {
     it("get parent", async () => {
 
         const D = await fs.mkdir("/A/B/C/D");
-        expect((await D.parent).path).toEqual(path.join(__dirname, "/A/B/C"));
+        expect((await D.parent).path).toEqual(path.join(__dirname, ".test/A/B/C"));
 
     });
 
 
     afterEach(async () => {
         fs = null;
-        return await new Promise((resolve, reject) => rimraf(path.join(__dirname, "A"), error =>
+        return await new Promise((resolve, reject) => rimraf(path.join(__dirname, ".test"), error =>
             error ? reject(error) : resolve()
         ));
     })

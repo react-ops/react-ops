@@ -40,6 +40,9 @@ describe("utils/Path", () => {
         expect(pathToSegments("/a/b")).toEqual(["a", "b"]);
         expect(pathToSegments("/a//b")).toEqual(["a", "b"]);
         expect(pathToSegments("/a/0/b")).toEqual(["a", "0", "b"]);
+        expect(pathToSegments(".")).toEqual([]);
+        expect(pathToSegments("")).toEqual([]);
+        expect(pathToSegments("/")).toEqual([]);
     });
 
 });

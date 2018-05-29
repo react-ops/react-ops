@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --coverage",
+    "test2": "jest --coverage -t 'applies'",
     "example-1": "ts-node examples/gatsby/gatsby.tsx"
   },
   "repository": {

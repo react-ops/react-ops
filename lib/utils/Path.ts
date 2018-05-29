@@ -3,7 +3,7 @@ import {
 } from "../index.d";
 
 export const pathToSegments = (path: string) => 
-    path && path.replace
+    path && path.replace && path !== "."
         ? path.replace(/^\//, '').split("/").filter(a => a !== "" && a !== null)
         : []
 

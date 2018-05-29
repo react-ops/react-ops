@@ -18,7 +18,7 @@ export type TFileSystemNodeHash = { [name: string]: IFileSystemNode };
 export type TOpsType = "file" | "folder" | "symlink" | "command";
 
 export interface IFolder extends IFileSystemNode {
-    // children: TFileSystemNodeHash | PromiseLike<TFileSystemNodeHash>
+    //children: TFileSystemNodeHash | PromiseLike<TFileSystemNodeHash>
 }
 
 export interface IFileSystem {
