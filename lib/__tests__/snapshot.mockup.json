@@ -1,0 +1,136 @@
+{
+    "type": "folder",
+    "key": "",
+    "props": {
+        "name": "",
+        "children": [
+            {
+                "type": "folder",
+                "key": "A",
+                "props": {
+                    "name": "A",
+                    "children": [
+                        {
+                            "type": "folder",
+                            "key": "B",
+                            "props": {
+                                "name": "B",
+                                "children": [
+                                    {
+                                        "type": "folder",
+                                        "key": "C",
+                                        "props": {
+                                            "name": "C",
+                                            "children": [
+                                                {
+                                                    "type": "folder",
+                                                    "key": "D",
+                                                    "props": {
+                                                        "name": "D",
+                                                        "children": []
+                                                    }
+                                                },
+                                                {
+                                                    "type": "file",
+                                                    "key": "M",
+                                                    "props": {
+                                                        "name": "M",
+                                                        "children": [
+                                                            "M"
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "type": "folder",
+                            "key": "E",
+                            "props": {
+                                "name": "E",
+                                "children": [
+                                    {
+                                        "type": "folder",
+                                        "key": "F",
+                                        "props": {
+                                            "name": "F",
+                                            "children": []
+                                        }
+                                    },
+                                    {
+                                        "type": "folder",
+                                        "key": "G",
+                                        "props": {
+                                            "name": "G",
+                                            "children": [
+                                                {
+                                                    "type": "folder",
+                                                    "key": "H",
+                                                    "props": {
+                                                        "name": "H",
+                                                        "children": [
+                                                            {
+                                                                "type": "folder",
+                                                                "key": "I",
+                                                                "props": {
+                                                                    "name": "I",
+                                                                    "children": []
+                                                                }
+                                                            }
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "type": "folder",
+                                        "key": "Z",
+                                        "props": {
+                                            "name": "Z",
+                                            "children": [
+                                                {
+                                                    "type": "file",
+                                                    "key": "L",
+                                                    "props": {
+                                                        "name": "L",
+                                                        "children": [
+                                                            "L"
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "type": "file",
+                            "key": "K",
+                            "props": {
+                                "name": "K",
+                                "children": [
+                                    "K"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "type": "file",
+                "key": "J",
+                "props": {
+                    "name": "J",
+                    "children": [
+                        "J"
+                    ]
+                }
+            }
+        ]
+    }
+}
