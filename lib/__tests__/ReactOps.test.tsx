@@ -26,9 +26,9 @@ describe("ReactOps", () => {
     })
 
     afterEach(async () => {
-        return await new Promise((resolve, reject) => rimraf(path.join(__dirname, ".test"), error =>
-            error ? reject(error) : resolve()
-        ));
+        // return await new Promise((resolve, reject) => rimraf(path.join(__dirname, ".test"), error =>
+        //     error ? reject(error) : resolve()
+        // ));
     })
 
     it("renders", async () => {
@@ -46,17 +46,90 @@ describe("ReactOps", () => {
         expect(await ReactOps.render(<PureComponent />, __dirname, null)).not.toBeNull();
         expect(await ReactOps.render(<span><strong><a /></strong></span>, __dirname, null)).not.toBeNull();
 
-        const publicFiles = <Volume name="public" />/*
-
-        // console.log(await ReactOps.render(
-        //     <Set>
-        //         <Composition name={"abc"}>
-        //             <Container/>
-        //         </Composition>
-        //     </Set>
-        //     , __dirname, null));*/
 
     });
+
+    it("renders files content properly", async () => {
+
+        const A = (props) => props.children.join("\n")
+        const B = (props) => props.name;
+        const C = (props) => JSON.stringify({ Z: [props.name] });
+
+        expect(ReactOps.cleanup(await ReactOps.render(
+            <File name="abc">Abc</File>
+            , __dirname, {
+                $fs: new VirtualFileSystem()
+            })))
+            .toEqual({
+                type: 'file',
+                key: 'abc',
+                props: { name: 'abc', children: ['Abc'] }
+            })
+
+        expect(ReactOps.cleanup(await ReactOps.render(
+            <File name="abc">
+                <B name="foo" />
+                <B name="bar" />
+                <B name="goo">
+                    Zoo
+            </B>
+            </File>,
+            __dirname, {
+                $fs: new VirtualFileSystem()
+            })))
+            .toEqual({
+                type: 'file',
+                key: 'abc',
+                props: { name: 'abc', children: ['foo', 'bar', 'goo'] }
+            })
+
+        expect(ReactOps.cleanup(await ReactOps.render(
+            <File name="abc">
+                <A name="foo" >
+                    <B name="bar" />
+                    <B name="goo" />
+                    ZONE
+                </A>
+            </File>,
+            __dirname, {
+                $fs: new VirtualFileSystem()
+            })))
+            .toEqual({
+                type: 'file',
+                key: 'abc',
+                props: { name: 'abc', children: ['bar\ngoo\nZONE'] }
+            })
+
+
+        expect(ReactOps.cleanup(await ReactOps.render(
+            <File name="abc">
+                {"some text"}
+                <A name="A">
+                    <B name="foo" />
+                    <A name="bar">
+                        <C name="goo" />
+                        <C name="goo" />
+                        <C name="goo" />
+                    </A>
+                </A>
+            </File>
+            , __dirname, {
+                $fs: new VirtualFileSystem()
+            })))
+            .toEqual({
+                type: 'file',
+                key: 'abc',
+                props:
+                    {
+                        name: 'abc',
+                        children: [
+                            'some text',
+                            'foo\n{"Z":["goo"]}\n{"Z":["goo"]}\n{"Z":["goo"]}'
+                        ]
+                    }
+            });
+
+    })
 
     it("collects", async () => {
 
@@ -167,8 +240,8 @@ describe("ReactOps", () => {
 
         await Promise
             .all([
-                new VirtualFileSystem(),
-                // new LocalFileSystem(path.join(__dirname, ".test"))
+                //new VirtualFileSystem(),
+                new LocalFileSystem(path.join(__dirname, ".test"))
             ]
                 .map(async (fs: IFileSystem) => {
 

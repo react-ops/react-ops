@@ -30,7 +30,7 @@ describe("lib/primitives/Folder", () => {
 
         expect(folder.type).toEqual("folder")
         expect(folder.props.name).toEqual("foldername");
-        expect(folder.props.$chroot).toEqual(abs);
+        expect(folder.props.$chroot).toEqual(__dirname);
 
         expect(Array.isArray(folder.props.children)).toEqual(true);
 

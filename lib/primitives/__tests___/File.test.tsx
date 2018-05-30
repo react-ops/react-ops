@@ -32,7 +32,7 @@ describe("lib/primitives/File", () => {
         expect(file.props.name).toEqual("filename");
         expect(file.props.$chroot).toEqual(__dirname);
 
-        expect(Array.isArray(file.props.children)).toEqual(true);
+        expect(file.props.$dry).toEqual(true);
 
         const children = (file.props.children as IReactOpsProps[]);
         expect(children.length).toEqual(1);

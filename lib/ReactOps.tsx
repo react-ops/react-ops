@@ -58,7 +58,12 @@ export class ReactOps {
             return node;
         }
         const element = node as IReactOpsElement;
-        const { children, $fs, $chroot, $dry, ...props } = element.props;
+        const { children, $fs, $chroot, $dry, ...props } = element.props || {
+            children: undefined,
+            $fs: undefined,
+            $chroot: undefined,
+            $dry: undefined
+        }
 
         return {
             type: element.type,
@@ -88,7 +93,6 @@ export class ReactOps {
                 .all(items
                     .map(child => ReactOps
                         .collect(Path.join(path, child), fs)))
-
 
             return {
                 type: "folder",
@@ -136,19 +140,14 @@ export class ReactOps {
             $dry
         }
 
-        const content: TReactOpsNode = ReactOps.invokeRender(element, parentProps);
+        let content: TReactOpsNode = await ReactOps.invokeRender(element, parentProps, executionPath);
         const asElement = content as React.ReactElement<TReactOpsProps>;
-        const children = ReactOps.children(asElement)
 
-        if (children) {
-            return {
-                ...asElement,
-                props: await ReactOps.renderChildren(children, asElement.props, executionPath)
-            };
-        }
+        // content = ReactOps.flat(content as React.ReactElement<TReactOpsProps>);
 
         return content;
     }
+
 
     private static async virtualDomAndFS<T extends IReactOpsElement>(
         element: T,
@@ -168,12 +167,12 @@ export class ReactOps {
         return { virtualDom, fs };
     }
 
-    private static children(content: React.ReactElement<TReactOpsProps>): null | React.ReactNode[] {
-        if (content && content.props && content.props.children) {
-            if (Array.isArray(content.props.children)) {
-                return content.props.children;
+    private static children(props: TReactOpsProps): null | React.ReactNode[] {
+        if (props && props.children) {
+            if (Array.isArray(props.children)) {
+                return props.children;
             }
-            return [content.props.children];
+            return [props.children];
         }
         return null;
     }
@@ -187,25 +186,47 @@ export class ReactOps {
                 ReactOps.renderChild(child, executionPath, parentProps)
             ));
         return {
-            ...props,
             children: childNodes
         }
     }
 
-    private static invokeRender(element: IReactOpsElement, inputProps?: TReactOpsProps): TReactOpsNode {
+    private static async invokeRender(element: IReactOpsElement, inputProps: TReactOpsProps, executionPath: string): Promise<TReactOpsNode> {
 
         if (typeof element.type !== "string") {
 
             const ElementType = element.type as TReactOpsElement;
             let props = { ...inputProps, ...element.props };
+            let renderMethod;
+            let childProps = props;
 
             if (shouldConstruct(ElementType)) {
                 const instance = new (ElementType as TReactOpsComponentClass)(props);
-                return instance.render();
-            } else {
-                return (ElementType as TReactOpsStatelessComponent)(props);
+                const asContext = (instance as any) as React.ChildContextProvider<any>;
 
+                if (asContext.getChildContext) {
+                    childProps = {
+                        ...props,
+                        ...asContext.getChildContext()
+                    }
+                }
+                renderMethod = (props) => {
+                    instance.props = props;
+                    return instance.render();
+                }
+            } else {
+                renderMethod = (ElementType as TReactOpsStatelessComponent)
             }
+
+            const children = ReactOps.children(props);
+
+            if (children && children.length) {
+                props = {
+                    ...props,
+                    ...(await ReactOps.renderChildren(children, childProps, executionPath))
+                }
+            }
+
+            return renderMethod(props);
         } else {
             return element;
         }
@@ -229,7 +250,7 @@ export class ReactOps {
             return ReactOps.render(child, executionPath, props);
         }
 
-        return null;
+        return child;
 
     }
 
@@ -246,7 +267,7 @@ export class ReactOps {
                 await element.props.$fs
                     .writeAsString(
                         Path.join(element.props.$chroot, element.props.name),
-                        ReactOps.toString(element),
+                        element.props.children as string,
                         "utf8");
                 break;
             }
@@ -263,19 +284,6 @@ export class ReactOps {
         }
     }
 
-    private static toString(node: IReactOpsElement) {
-        if (node.props && node.props.children && Array.isArray(node.props.children)) {
-            return (node.props.children as React.ReactNode[])
-                .map(node => {
-                    if (!node || typeof node !== "object") {
-                        return String(node);
-                    }
-                    return ReactOps.toString(node as IReactOpsElement);
-                })
-                .join("")
 
-        }
-        return "";
-    }
 
 }

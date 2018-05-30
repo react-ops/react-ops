@@ -11,6 +11,9 @@ export interface IFileProps {
 }
 
 export class File extends ReactOpsComponent<IFileProps, IFileProps> {
+
+    
+
     public render(): IReactOpsNode {
         return {
             type: "file",

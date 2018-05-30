@@ -17,9 +17,15 @@ export class Folder extends ReactOpsComponent<IFileProps, IFileProps> {
             key: this.props.name,
             props: {
                 children: [],
-                ...this.props,                
-                $chroot: path.join(this.props.$chroot, this.props.name)
+                ...this.props,                                
             }
         };
+    }
+
+    public getChildContext() {
+        return {
+            ...(this.props),
+            $chroot: path.join(this.props.$chroot, this.props.name)
+        }
     }
 }
