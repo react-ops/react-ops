@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --coverage",
-    "test2": "jest --coverage -t 'lib/primitives/JSONText'",
+    "test2": "jest --coverage -t 'lib/packages/nginx/NginxConf'",
     "example-1": "ts-node examples/gatsby/gatsby.tsx"
   },
   "repository": {

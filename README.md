@@ -65,11 +65,11 @@ This repository is Very In Progress and not ready for production!
                 }
               }}
             </NginxConfig>
-          </TmpFile>
+          </File>
           <File target="/etc/nginx/sites-enabled/app">
             <NginxConfig>
               {{
-                "upstream$node_servers": new Array(nodesCount)
+                "upstream$node_servers": Array.apply(null, Array(nodesCount))
                   .map((_, index) => 3000 + index)
                   .reduce((p, c) => {
                     p["server$" + c] = "nodejs:" + c;
