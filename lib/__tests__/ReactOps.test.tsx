@@ -26,9 +26,9 @@ describe("ReactOps", () => {
     })
 
     afterEach(async () => {
-        // return await new Promise((resolve, reject) => rimraf(path.join(__dirname, ".test"), error =>
-        //     error ? reject(error) : resolve()
-        // ));
+        return await new Promise((resolve, reject) => rimraf(path.join(__dirname, ".test"), error =>
+            error ? reject(error) : resolve()
+        ));
     })
 
     it("renders", async () => {

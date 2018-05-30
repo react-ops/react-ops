@@ -7,6 +7,7 @@ interface IContainerProps {
     from: string;
     steps: string;
     command: string;
+    name: string;
 }
 
 export const Container = (props) => (
